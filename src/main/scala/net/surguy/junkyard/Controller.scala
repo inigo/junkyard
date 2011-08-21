@@ -68,6 +68,8 @@ class Controller(val size: Int, val turns: Int = 10) extends WithLog {
     timer.showAverage() // with forkjoin: 28,31,30 - without: 27,26
   }
 
+  def dispose() { display.dispose() }
+
 
   def splitInHalf[T](list: LinearSeq[T]) = { val split = list.splitAt( list.size / 2 ); List(split._1, split._2) }
   def splitInFour[T](list: LinearSeq[T]) = splitInHalf(list).map( splitInHalf(_) ).flatten

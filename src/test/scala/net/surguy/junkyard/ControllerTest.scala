@@ -19,7 +19,9 @@ class ControllerTest extends SpecificationWithJUnit {
 
   "running turns" should {
      "do something sensible" in {
-       new Controller(size, 200).runTurn(map)
+       val controller: Controller = new Controller(size, 200)
+       controller.runTurn(map) mustNot throwAnException
+       controller.dispose()
      }
   }
 

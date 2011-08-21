@@ -18,7 +18,8 @@ class Java2dDisplayTest extends SpecificationWithJUnit {
   "initializing" should {
      "show a frame" in {
        val d = new Java2dDisplay(600,600,10)
-       d.display(map)
+       d.display(map) mustNot throwAnException
+       d.dispose()
      }
   }
 

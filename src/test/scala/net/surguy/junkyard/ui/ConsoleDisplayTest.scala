@@ -17,7 +17,7 @@ class ConsoleDisplayTest extends SpecificationWithJUnit {
 
   "displaying a map" should {
      "do something sensible" in {
-       new ConsoleDisplay(10).display(map)
+       new ConsoleDisplay(10).display(map) mustNot throwAnException
      }
   }
 

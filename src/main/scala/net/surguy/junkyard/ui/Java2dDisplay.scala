@@ -28,6 +28,10 @@ class Java2dDisplay(val totalWidth: Int, val totalHeight: Int, val size: Int) ex
     }
   }
 
+  def dispose() {
+    frame.dispose()
+  }
+
   override def display(section: MapSection) { display(section, None) }
   override def display(section: MapSection, changedAreas: Set[Coord]) { display(section, Some(changedAreas)) }
 
