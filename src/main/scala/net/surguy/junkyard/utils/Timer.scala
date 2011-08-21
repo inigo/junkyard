@@ -3,6 +3,7 @@ package net.surguy.junkyard.utils
 import java.io.PrintStream
 import collection.mutable.HashMap
 import java.lang.String
+import org.slf4j.Logger
 
 /**
  * 
@@ -10,7 +11,7 @@ import java.lang.String
  * @author Inigo Surguy
  * @created Mar 23, 2010 8:38:06 PM
  */
-class Timer(val ignoreFirst: Int = 0, val stages: Int = 1)(implicit val out: LoggingStream) {
+class Timer(val ignoreFirst: Int = 0, val stages: Int = 1, val out: TimeReporter) {
   var count = 0
   val totals = new HashMap[String, Long]() {
     override def default(key: String) = 0
@@ -21,7 +22,7 @@ class Timer(val ignoreFirst: Int = 0, val stages: Int = 1)(implicit val out: Log
     val result = body()
     val timeAfter = System.nanoTime
     val timeTaken = (timeAfter - timeBefore) / 1000000
-    out.delegate.println(label+ ": "+timeTaken)
+    out.println(label+ ": "+timeTaken)
     count = count + 1
     if (count>ignoreFirst) totals(label) = totals(label)+timeTaken
     result
@@ -31,13 +32,20 @@ class Timer(val ignoreFirst: Int = 0, val stages: Int = 1)(implicit val out: Log
     if (count>ignoreFirst) {
       val totalCount = totals.values.sum / ((count/stages)-ignoreFirst)
       val separateCounts = totals.collect{ case (label,total) => label+" "+( total / ((count/stages)-ignoreFirst) ) }.mkString(", ")
-      out.delegate.println("Average: %s divided into: %s".format(totalCount, separateCounts))
-    } else out.delegate.println("No average recorded yet")
+      out.println("Average: %s divided into: %s".format(totalCount, separateCounts))
+    } else out.println("No average recorded yet")
   }
 
 }
 
-object LoggingStream {
-  implicit val defaultOutput = LoggingStream(Console.out)
+abstract class TimeReporter {
+  def println(s: String)
 }
-case class LoggingStream(delegate: PrintStream)
+
+class StreamTimeReporter(stream: PrintStream) extends TimeReporter {
+  def println(s: String) { stream.println(s) }
+}
+
+class LogTimeReporter(log: Logger) extends TimeReporter {
+  def println(s: String) { log.debug(s) }
+}

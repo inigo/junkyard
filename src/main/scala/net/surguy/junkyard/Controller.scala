@@ -4,7 +4,7 @@ import mapping.MapSection
 import ui.{Java2dDisplay, ConsoleDisplay}
 import scala.actors.Futures._
 import net.surguy.junkyard.pathfinder._
-import utils.{WithLog, Timer}
+import utils.{LogTimeReporter, WithLog, Timer}
 import zoning.{GatewayZoneFinder, ZoneFinder}
 import collection.LinearSeq
 
@@ -22,7 +22,7 @@ class Controller(val size: Int, val turns: Int = 10) extends WithLog {
 
   private val useZoningPathfinder = true
 
-  private val availableProcessors = java.lang.Runtime.getRuntime().availableProcessors
+  private val availableProcessors = java.lang.Runtime.getRuntime.availableProcessors
 
   init()
 
@@ -38,7 +38,7 @@ class Controller(val size: Int, val turns: Int = 10) extends WithLog {
 
     currentMap = new GatewayZoneFinder(size).addZones(currentMap)
 
-    val timer = new Timer(ignoreFirst = 50, stages = 3)
+    val timer = new Timer(ignoreFirst = 50, stages = 3, out = new LogTimeReporter(log))
     display.display(currentMap)
     for (i <- (1 to turns)) {
 
