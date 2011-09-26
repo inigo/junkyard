@@ -16,8 +16,8 @@
     <build>
         <plugins>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.3.2</version>
                 <configuration>
                     <debug>true</debug>
                     <source>1.5</source>
@@ -26,78 +26,33 @@
             </plugin>
 
             <plugin>
-                <groupId>org.scala-tools</groupId>
-                <artifactId>maven-scala-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>compile</goal>
-                            <goal>testCompile</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <plugin>
-                <groupId>com.googlecode.mavennatives</groupId>
-                <artifactId>maven-nativedependencies-plugin</artifactId>
-                <version>0.0.2</version>
-                <executions>
-                    <execution>
-                        <id>unpacknatives</id>
-                        <goals>
-                            <goal>copy</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
+				<groupId>org.scala-tools</groupId>
+				<artifactId>maven-scala-plugin</artifactId>
+                <version>2.15.2</version>
+				<executions>
+					<execution>
+						<id>scala-compile-first</id>
+						<phase>process-resources</phase>
+						<goals>
+						    <goal>add-source</goal>
+							<goal>compile</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>scala-test-compile</id>
+						<phase>process-test-resources</phase>
+						<goals>
+							<goal>testCompile</goal>
+						</goals>
+					</execution>
+				</executions>
+                <configuration>
+                    <scalaVersion>${scala.version}</scalaVersion>
+                </configuration>
+			</plugin>
 
         </plugins>
     </build>
-
-    <repositories>
-        <repository>
-            <id>IBiblio</id>
-            <url>http://mirrors.ibiblio.org/pub/mirrors/maven2/</url>
-        </repository>
-        <repository>
-            <id>scala-tools.org</id>
-            <name>Scala-Tools Maven2 Repository</name>
-            <url>http://scala-tools.org/repo-releases</url>
-        </repository>
-<!--
-        <repository>
-            <id>JBoss</id>
-            <name>JBoss</name>
-            <url>http://repository.jboss.com/maven2/</url>
-        </repository>
--->
-        <!-- Only needed for nightly release snapshots -->
-        <!--
-        <repository>
-                <id>snapshots.scala-tools.org</id>
-                <name>Scala-Tools Maven2 Repository - Snapshots</name>
-                <url>http://scala-tools.org/repo-snapshots</url>
-        </repository>
-        -->
-    </repositories>
-
-    <pluginRepositories>
-        <pluginRepository>
-            <id>scala-tools.org</id>
-            <name>Scala-Tools Maven2 Repository</name>
-            <url>http://scala-tools.org/repo-releases</url>
-        </pluginRepository>
-    </pluginRepositories>
-
-    <reporting>
-        <plugins>
-            <plugin>
-                <groupId>org.scala-tools</groupId>
-                <artifactId>maven-scala-plugin</artifactId>
-            </plugin>
-        </plugins>
-    </reporting>
 
     <dependencies>
         <dependency>
@@ -109,20 +64,12 @@
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
-            <version>0.9.26</version>
+            <version>0.9.29</version>
         </dependency>
-	<!--
-        <dependency>
-            <groupId>org.lwjgl</groupId>
-            <artifactId>lwjgl</artifactId>
-            <version>2.6.0</version>
-	</dependency>
-	-->
 
         <!--
             Test code
         -->
-
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
@@ -130,27 +77,12 @@
             <scope>test</scope>
         </dependency>
 
-<!--
-        <dependency>
-            <groupId>org.scala-tools.testing</groupId>
-            <artifactId>scalacheck_2.8.0.Beta1</artifactId>
-            <version>1.7-SNAPSHOT</version>
-            <scope>test</scope>
-        </dependency>
--->
-
         <dependency>
             <groupId>org.scala-tools.testing</groupId>
             <artifactId>specs_2.8.1</artifactId>
-            <version>1.6.6</version>
+            <version>1.6.8</version>
             <scope>test</scope>
         </dependency>
-<!--
-        <dependency>
-            <groupId>org.drools</groupId>
-            <artifactId>drools-core</artifactId>
-            <version>5.0.1</version>
-        </dependency>
-              -->
+
     </dependencies>
 </project>
