@@ -5,8 +5,8 @@ import net.surguy.junkyard._
 import net.surguy.junkyard.utils.Logging
 
 /**
- * Navigate between across a {@link MapSection map} by going between the edge nodes of each
- * {@link ZoneLookup zone}, reverting to low level path rules for navigating within a zone.
+ * Navigate between across a {{{MapSection map}}} by going between the edge nodes of each
+ * {{{ZoneLookup zone}}}, reverting to low level path rules for navigating within a zone.
  */
 
 class EdgesPathFinder(zones: ZoneLookup, lowLevelPathRules: PathRules, maxSearchedNodes: Int = 50) extends PathFinder with Logging {

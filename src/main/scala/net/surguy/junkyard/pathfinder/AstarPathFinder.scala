@@ -25,9 +25,6 @@ import scala.collection.mutable
  *          and it isn't an obstacle then
  *            move it to open list and calculate score, based on cost + heuristic
  * </pre>
- *
- * @author Inigo Surguy
- * @created Mar 21, 2010 8:28:56 AM
  */
 
 abstract class PathRules {
@@ -55,8 +52,8 @@ object AstarPathFinder {
   type Cost = Int
 
   case class Node(coord: Coord, inherentCost: Cost, parent: Option[Node]) {
-    val path = toPath().reverse
-    val totalCost = path.foldLeft(0)(_+_.inherentCost)
+    val path: List[Node] = toPath().reverse
+    val totalCost: Cost = path.foldLeft(0)(_+_.inherentCost)
     private def toPath(): List[Node] = parent match {
       case None => List(this)
       case Some(n) => this :: n.toPath

@@ -6,8 +6,8 @@ import mapping.MapSection
 
 class ConsoleDisplay(size: Int) extends Display {
 
-  def display(section: MapSection) = display(section, Set())
-  def display(section: MapSection, changedAreas: Set[Coord]) {
+  def display(section: MapSection): Unit = display(section, Set())
+  def display(section: MapSection, changedAreas: Set[Coord]): Unit = {
     val chars = for (x <- 0 until size;
                      y <- 0 until size;
                      items = section.itemsAt(Coord(x, y));

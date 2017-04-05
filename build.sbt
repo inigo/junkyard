@@ -2,7 +2,7 @@ name := """Junkyard"""
 
 version := "1.0-SNAPSHOT"
 
-lazy val root = (project in file("."))
+lazy val root = project in file(".")
 
 parallelExecution in Test := false
 

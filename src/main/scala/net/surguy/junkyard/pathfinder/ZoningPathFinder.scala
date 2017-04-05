@@ -5,20 +5,20 @@ import net.surguy.junkyard.Coord
 import net.surguy.junkyard.zoning.ZoneLookup
 
 /**
- * Navigate across a {@link MapSection map} by going between the central points of each
- * {@link ZoneLookup zone}, reverting to low level path rules for navigating within a zone.
- * <p>
- * This pathfinder should be slightly more efficient than the {@link EdgesPathFinder edges pathfinder}
+ * Navigate across a {{{MapSection map}}} by going between the central points of each
+ * {{{ ZoneLookup zone}}}, reverting to low level path rules for navigating within a zone.
+ *
+ * This pathfinder should be slightly more efficient than the {{{ EdgesPathFinder edges pathfinder}}}
  * because each zone is a single node, whereas the edges pathfinder has multiple nodes per zone.
- * <p>
+ *
  * It currently fails in some cases (units get into a perpetual loop) because the low level pathfinder
  * and the zoning pathfinder disagree on the route to take - perhaps because the zoning pathfinder does
  * not properly take account of terrain costs.
  */
 class ZoningPathFinder(zones: ZoneLookup, lowLevelPathRules: PathRules, maxSearchedNodes: Int = 50) extends PathFinder with Logging {
-  val zoneLevelPathFinder = new AstarPathFinder(new ZoneRules())
-  val lowLevelPathFinder = new AstarPathFinder(lowLevelPathRules)
-  val withinZonePathFinder = new AstarPathFinder(new PathRulesWrapper(zones, lowLevelPathRules))
+  private val zoneLevelPathFinder = new AstarPathFinder(new ZoneRules())
+  private val lowLevelPathFinder = new AstarPathFinder(lowLevelPathRules)
+  private val withinZonePathFinder = new AstarPathFinder(new PathRulesWrapper(zones, lowLevelPathRules))
 
   private class ZoneRules extends PathRules {
     import AstarPathFinder._
@@ -32,7 +32,7 @@ class ZoningPathFinder(zones: ZoneLookup, lowLevelPathRules: PathRules, maxSearc
       zones.zoneAt(coord).map( _.neighbours.map( zones.lookup(_).center ).toList ).getOrElse( List() )
   }
 
-  val noPath = List[Coord]()
+  private val noPath = List[Coord]()
 
   override def path(start: Coord, destination: Coord) : List[Coord] = {
     if (start==destination) return noPath

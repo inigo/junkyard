@@ -1,9 +1,13 @@
 package net.surguy.junkyard.ui
 
 import javax.swing.JFrame
+
 import net.surguy.junkyard.Coord
 import java.awt.{Color, Font}
+
 import net.surguy.junkyard.mapping.MapSection
+
+import scala.language.implicitConversions
 
 class Java2dDisplay(val totalWidth: Int, val totalHeight: Int, val size: Int) extends Display {
   val xDimension: Int = totalWidth / size
@@ -39,12 +43,12 @@ class Java2dDisplay(val totalWidth: Int, val totalHeight: Int, val size: Int) ex
 
     val toUpdate: Iterable[Coord] = changedAreas.getOrElse( for (x <- 0 until size; y <- 0 until size) yield Coord(x,y) )
     
-    for (c <- toUpdate;
+    for (c <- toUpdate
          if changedAreas.isEmpty || changedAreas.get.contains(c);
          items = section.itemsAt(c);
          terrainChar = d.toDisplayTerrain(section.terrainAt(c));
          currentChar = d.toDisplay(items).getOrElse(terrainChar) ) {
-      val top = (yDimension) + (c.y * yDimension)
+      val top = yDimension + (c.y * yDimension)
       val left = c.x * xDimension
       val cellWidth = xDimension
       val cellHeight = yDimension
@@ -52,8 +56,8 @@ class Java2dDisplay(val totalWidth: Int, val totalHeight: Int, val size: Int) ex
         val zone = section.zones.get.zoneAt(c)
         var color = zone.map(_.getColor).getOrElse(new Color(255, 255, 255))
         if (zone.isDefined) {
-          if (zone.get.edgeCoords.contains(c)) color = color.darken
-          if (zone.get.filteredEdgeCoords.contains(c)) color = color.darken
+          if (zone.get.edgeCoords.contains(c)) color = color.darken()
+          if (zone.get.filteredEdgeCoords.contains(c)) color = color.darken()
         }
         g.setColor( color )
         g.fillRect(left, top - yDimension, cellWidth, cellHeight)
