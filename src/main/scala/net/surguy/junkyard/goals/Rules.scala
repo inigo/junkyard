@@ -2,6 +2,8 @@ package net.surguy.junkyard.goals
 
 import net.surguy.junkyard.mapping.MapSection
 import net.surguy.junkyard._
+
+import scala.language.implicitConversions
 import scala.reflect.Manifest
 
 /**
@@ -21,7 +23,7 @@ object RulesMatcher {
 class Rules(rules: List[Rule])
 
 class Rule(val name: String, conditions: List[Condition], action: Action) {
-  override def toString = name
+  override def toString: String = name
   def test(state: State): Boolean = {
     var matches = null
     for (c <- conditions) {
@@ -48,10 +50,10 @@ abstract class Condition {
 class State(val creature: PlacedThing, val mapSection: MapSection)
 
 case class At(place: Place) extends Condition {
-  def isTrue(state: State) = state.mapSection.itemsAt(state.creature.coord).contains(place)
+  def isTrue(state: State): Boolean = state.mapSection.itemsAt(state.creature.coord).contains(place)
 }
 case class On[T <: Terrain](implicit m: Manifest[T]) extends Condition {
-  def isTrue(state: State) = isRightClass( state.mapSection.terrainAt(state.creature.coord) )
+  def isTrue(state: State): Boolean = isRightClass( state.mapSection.terrainAt(state.creature.coord) )
   private def isRightClass(o: Object) = m >:> Manifest.classType(o.getClass)
 }
 case class Always() extends Condition {
@@ -64,7 +66,7 @@ case class Has[T](implicit m: Manifest[T]) extends Condition {
 }
 
 case class NextTo[T <: Creature](implicit m: Manifest[T]) extends Condition {
-  def isTrue(state: State) = state.mapSection.nearbyItems(state.creature.coord).find( item => isRightClass(item.thing) ).isDefined
+  def isTrue(state: State): Boolean = state.mapSection.nearbyItems(state.creature.coord).exists(item => isRightClass(item.thing))
   private def isRightClass(o: Object) = m >:> Manifest.classType(o.getClass)
 }
 
@@ -94,11 +96,11 @@ import BuildRules._
 import RulesHelpers._
 
 object RulesHelpers {
-  def matched[T]() = null
+  def matched[T] = null
 }
 
 trait RuleProvider {
-  def rules = List[Rule]()
+  def rules: List[Rule] = List[Rule]()
 }
 
 

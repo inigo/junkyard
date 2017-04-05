@@ -1,21 +1,18 @@
 package net.surguy.junkyard
 
 import mapping.MapSection
-import ui.{Java2dDisplay, ConsoleDisplay}
-import scala.actors.Futures._
+import ui.{ConsoleDisplay, Java2dDisplay}
+
+import scala.concurrent.{Await, Future}
+import scala.concurrent.duration._
 import net.surguy.junkyard.pathfinder._
-import utils.{LogTimeReporter, WithLog, Timer}
+import utils.{LogTimeReporter, Timer, Logging}
 import zoning.{GatewayZoneFinder, ZoneFinder}
+import scala.concurrent.ExecutionContext.Implicits.global
+
 import collection.LinearSeq
 
-/**
- * 
- *
- * @author Inigo Surguy
- * @created Mar 21, 2010 7:49:52 AM
- */
-
-class Controller(val size: Int, val turns: Int = 10) extends WithLog {
+class Controller(val size: Int, val turns: Int = 10) extends Logging {
 
 //  private val display = new ConsoleDisplay(size)
   private val display = new Java2dDisplay(600,600,size)
@@ -33,33 +30,34 @@ class Controller(val size: Int, val turns: Int = 10) extends WithLog {
     System.setProperty("actors.corePoolSize",""+availableProcessors*2 )
   }
 
-  def runTurn(startingMap: MapSection) = {
+  def runTurn(startingMap: MapSection): Unit = {
     var currentMap = startingMap
 
     currentMap = new GatewayZoneFinder(size).addZones(currentMap)
 
     val timer = new Timer(ignoreFirst = 50, stages = 3, out = new LogTimeReporter(log))
     display.display(currentMap)
-    for (i <- (1 to turns)) {
+    for (i <- 1 to turns) {
 
       // To make this single-threaded again, remove the "future" and remove the .map(_()) - no other changes
       val moves: List[MovingThing] = timer.time("pathfinding", () => splitInEight(currentMap.allCreatures).map(
-        l => future { l.map( (c: PlacedThing) => {
-          val creature = c.thing.asInstanceOf[Creature]
-          if (c.path.isEmpty) {
-            val pathRules = new JunkyardPathRules(currentMap, creature)
-            val lowLevelPathFinder = new AstarPathFinder(pathRules)
-    //        val highLevelPathFinder = new EdgesPathFinder(currentMap.zones.get, pathRules)
-            val highLevelPathFinder = new CachingPathFinder(new EdgesPathFinder(currentMap.zones.get, pathRules))
-            val goal = creature.goal(c.coord, currentMap)
-            var newPath = (if (useZoningPathfinder) highLevelPathFinder else lowLevelPathFinder).path(c.coord, goal)
-            if (newPath.isEmpty) None else Some(new MovingThing(c.thing, c.coord, newPath.head, newPath.tail))
-          } else {
-            val newPath = c.path
-            Some(new MovingThing(c.thing, c.coord, newPath.head, newPath.tail))
-          }
-        })
-      }).map(_()).flatten.flatMap(_.toList) )
+        l => Future {
+          l.map((c: PlacedThing) => {
+            val creature = c.thing.asInstanceOf[Creature]
+            if (c.path.isEmpty) {
+              val pathRules = new JunkyardPathRules(currentMap, creature)
+              val lowLevelPathFinder = new AstarPathFinder(pathRules)
+              //        val highLevelPathFinder = new EdgesPathFinder(currentMap.zones.get, pathRules)
+              val highLevelPathFinder = new CachingPathFinder(new EdgesPathFinder(currentMap.zones.get, pathRules))
+              val goal = creature.goal(c.coord, currentMap)
+              var newPath = (if (useZoningPathfinder) highLevelPathFinder else lowLevelPathFinder).path(c.coord, goal)
+              if (newPath.isEmpty) None else Some(new MovingThing(c.thing, c.coord, newPath.head, newPath.tail))
+            } else {
+              val newPath = c.path
+              Some(new MovingThing(c.thing, c.coord, newPath.head, newPath.tail))
+            }
+          })
+        }).flatMap(f => Await.result(f, 10.seconds)).flatMap(_.toList) )
         // .map(_())
       val changedAreas = moves.flatMap(m => List(m.coord, m.desiredCoord) ).toSet
       currentMap = timer.time("resolving", () => currentMap.resolve(moves))
@@ -71,9 +69,9 @@ class Controller(val size: Int, val turns: Int = 10) extends WithLog {
   def dispose() { display.dispose() }
 
 
-  def splitInHalf[T](list: LinearSeq[T]) = { val split = list.splitAt( list.size / 2 ); List(split._1, split._2) }
-  def splitInFour[T](list: LinearSeq[T]) = splitInHalf(list).map( splitInHalf(_) ).flatten
-  def splitInEight[T](list: LinearSeq[T]) = splitInFour(list).map( splitInFour(_) ).flatten
-  implicit def SplittableList[T](list: List[T]) = new { def splitInQuarters() = splitInHalf(list).map( splitInHalf(_) ).flatten }
+  def splitInHalf[T](list: LinearSeq[T]): List[LinearSeq[T]] = { val split = list.splitAt( list.size / 2 ); List(split._1, split._2) }
+  def splitInFour[T](list: LinearSeq[T]): List[LinearSeq[T]] = splitInHalf(list).flatMap(splitInHalf(_))
+  def splitInEight[T](list: LinearSeq[T]): List[LinearSeq[T]] = splitInFour(list).flatMap(splitInFour(_))
+  implicit def SplittableList[T](list: List[T]) = new { def splitInQuarters() = splitInHalf(list).flatMap(splitInHalf(_)) }
 
 }

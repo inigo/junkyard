@@ -1,6 +1,6 @@
 package net.surguy.junkyard.pathfinder
 
-import net.surguy.junkyard.utils.WithLog
+import net.surguy.junkyard.utils.Logging
 import net.surguy.junkyard.Coord
 import net.surguy.junkyard.zoning.ZoneLookup
 
@@ -14,11 +14,8 @@ import net.surguy.junkyard.zoning.ZoneLookup
  * It currently fails in some cases (units get into a perpetual loop) because the low level pathfinder
  * and the zoning pathfinder disagree on the route to take - perhaps because the zoning pathfinder does
  * not properly take account of terrain costs.
- *
- * @author Inigo Surguy
- * @created Mar 28, 2010 2:17:50 PM
  */
-class ZoningPathFinder(zones: ZoneLookup, lowLevelPathRules: PathRules, maxSearchedNodes: Int = 50) extends PathFinder with WithLog {
+class ZoningPathFinder(zones: ZoneLookup, lowLevelPathRules: PathRules, maxSearchedNodes: Int = 50) extends PathFinder with Logging {
   val zoneLevelPathFinder = new AstarPathFinder(new ZoneRules())
   val lowLevelPathFinder = new AstarPathFinder(lowLevelPathRules)
   val withinZonePathFinder = new AstarPathFinder(new PathRulesWrapper(zones, lowLevelPathRules))

@@ -1,16 +1,9 @@
 package net.surguy.junkyard.pathfinder
 
-import org.specs.SpecificationWithJUnit
 import net.surguy.junkyard._
+import org.specs2.mutable.Specification
 
-/**
- * 
- *
- * @author Inigo Surguy
- * @created Mar 21, 2010 12:10:58 PM
- */
-
-class AstarPathFinderTest extends SpecificationWithJUnit {
+class AstarPathFinderTest extends Specification {
 /*
 
   val items = Robot("glub").at(5,5) :: Heap().at(3,4) :: Heap().at(3,3) :: PowerSocket().at(1,1) :: Heap().at(3,1) :: Heap().at(4,1) :: Heap().at(3,5) :: List()

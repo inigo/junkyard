@@ -4,22 +4,15 @@ import net.surguy.junkyard._
 import java.awt.Color
 import mapping.MapSection
 
-/**
- * 
- *
- * @author Inigo Surguy
- * @created Mar 20, 2010 4:58:37 PM
- */
-
 class ConsoleDisplay(size: Int) extends Display {
 
   def display(section: MapSection) = display(section, Set())
   def display(section: MapSection, changedAreas: Set[Coord]) {
-    val chars = for (x <- (0 until size);
-         y <- (0 until size);
-         items = section.itemsAt(Coord(x, y));
-         terrainChar = toDisplayTerrain(section.terrainAt(Coord(x,y)));
-         currentChar = toDisplay(items)
+    val chars = for (x <- 0 until size;
+                     y <- 0 until size;
+                     items = section.itemsAt(Coord(x, y));
+                     terrainChar = toDisplayTerrain(section.terrainAt(Coord(x,y)));
+                     currentChar = toDisplay(items)
         ) yield currentChar.getOrElse(terrainChar)
 
     chars.grouped(size).foreach( row => println(row.map(_.char).mkString) )

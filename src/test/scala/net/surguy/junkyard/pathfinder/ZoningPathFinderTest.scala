@@ -1,35 +1,29 @@
 package net.surguy.junkyard.pathfinder
 
-import org.specs.SpecificationWithJUnit
 import net.surguy.junkyard._
 import net.surguy.junkyard.mapping.MapGenerator
-import utils.WithLog
+import org.specs2.mutable.Specification
+import utils.Logging
 import zoning.ZoneFinder
 
-/**
- * 
- *
- * @author Inigo Surguy
- * @created Mar 28, 2010 6:00:37 PM
- */
-class ZoningPathFinderTest extends SpecificationWithJUnit with WithLog {
+class ZoningPathFinderTest extends Specification with Logging {
 
-  val size = 20
-  val map = new MapGenerator(0).createMap(size)
-  val zonedMap = new ZoneFinder(size).addZones(map)
+  private val size = 20
+  private val map = new MapGenerator(0).createMap(size)
+  private val zonedMap = new ZoneFinder(size).addZones(map)
 
-  val pathRules = new JunkyardPathRules(map, new Robot("glob"))
-  val zonedPathFinder = new ZoningPathFinder(zonedMap.zones.get, pathRules)
+  private val pathRules = new JunkyardPathRules(map, new Robot("glob"))
+  private val zonedPathFinder = new ZoningPathFinder(zonedMap.zones.get, pathRules)
 
   "finding path" should {
     "work normally within a zone" in {
-      zonedPathFinder.path(Coord(10, 4), Coord(15,13)).headOption must be equalTo(Some(Coord(10,5)))
+      zonedPathFinder.path(Coord(10, 4), Coord(15,13)).headOption mustEqual Some(Coord(10,5))
     }
     "should not get stuck" in {
       var start = Coord(6, 13)
       val nextCoord = zonedPathFinder.path(start, Coord(11,4)).head
       log.debug("---")
-      zonedPathFinder.path(nextCoord, Coord(11,4)).headOption must not be equalTo(Some(start))
+      zonedPathFinder.path(nextCoord, Coord(11,4)).headOption mustNotEqual Some(start)
     }
 /*
     "work normally within a zone" in {

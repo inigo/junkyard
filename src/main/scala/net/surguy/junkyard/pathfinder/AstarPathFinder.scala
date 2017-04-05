@@ -1,9 +1,11 @@
 package net.surguy.junkyard.pathfinder
 
-import collection.mutable.{HashSet, PriorityQueue, ListBuffer, Queue}
-import net.surguy.junkyard.utils.WithLog
+import collection.mutable.{HashSet, ListBuffer, PriorityQueue, Queue}
+import net.surguy.junkyard.utils.Logging
 import net.surguy.junkyard._
 import mapping.MapSection
+
+import scala.collection.mutable
 
 /**
  * Implement the A* algorithm for path finding.
@@ -62,23 +64,23 @@ object AstarPathFinder {
   }
 }
 
-class AstarPathFinder(rules: PathRules, maxSearchedNodes: Int = 900) extends PathFinder with WithLog {
+class AstarPathFinder(rules: PathRules, maxSearchedNodes: Int = 900) extends PathFinder with Logging {
   import AstarPathFinder._
 
   override def path(start: Coord, destination: Coord) : List[Coord] = {
     if (start==destination) return List[Coord]()
     if (rules.isImpassible(destination)) return List[Coord]()
 
-    val considered = new HashSet[Coord]()
-    val open = new PriorityQueue[Node]()(new Ordering[Node] {
-      def compare(a: Node, b: Node) = - ( rules.getScore(a, destination).compare(rules.getScore(b, destination)) )
+    val considered = new mutable.HashSet[Coord]()
+    val open = new mutable.PriorityQueue[Node]()(new Ordering[Node] {
+      def compare(a: Node, b: Node): Cost = - rules.getScore(a, destination).compare(rules.getScore(b, destination))
     })
 
-    open += new Node(start, 0, None)
+    open += Node(start, 0, None)
     considered += start
     var lastNodeInPath: Option[Node] = None
 
-    while (open.size > 0 && lastNodeInPath.isEmpty && considered.size<maxSearchedNodes) {
+    while (open.nonEmpty && lastNodeInPath.isEmpty && considered.size<maxSearchedNodes) {
       val current : Node = open.dequeue
       if (current.coord == destination) {
         lastNodeInPath = Some(current)
@@ -87,7 +89,7 @@ class AstarPathFinder(rules: PathRules, maxSearchedNodes: Int = 900) extends Pat
         val adjacentCoords = rules.getAdjacent(current.coord)
         adjacentCoords.filterNot( rules.isImpassible )
                       .filterNot( considered.contains )
-                      .foreach( n => { open+=new Node(n, rules.getCost(n), Some(current)); considered+=n } )
+                      .foreach( n => { open+=Node(n, rules.getCost(n), Some(current)); considered+=n } )
       }
     }
 

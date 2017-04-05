@@ -3,22 +3,15 @@ package net.surguy.junkyard
 import goals.PowerUser
 import mapping.MapSection
 import util.Random
-import utils.WithLog
+import utils.Logging
 
-/**
- * 
- *
- * @author Inigo Surguy
- * @created Mar 20, 2010 4:56:24 PM
- */
-
-abstract class Creature extends Thing with WithLog {
+abstract class Creature extends Thing with Logging {
   def goal(current: Coord, section: MapSection) : Coord = Coord(1,1)
 }
-case class Robot(val name: String) extends Creature with PowerUser {
+case class Robot(name: String) extends Creature with PowerUser {
   private var target: Option[Coord] = None
-  override def goal(current: Coord, section: MapSection) = {
-    if (target.isEmpty || section.itemsAt(current).find(_.isInstanceOf[PowerSocket]).isDefined) {
+  override def goal(current: Coord, section: MapSection): Coord = {
+    if (target.isEmpty || section.itemsAt(current).exists(_.isInstanceOf[PowerSocket])) {
       target = Some( Random.shuffle(section.allItems.filter(_.thing.isInstanceOf[PowerSocket])).head.coord )
       log.debug("Choosing new target - "+target)
     }
@@ -30,9 +23,9 @@ case class Robot(val name: String) extends Creature with PowerUser {
   }
 }
 
-case class JunkSquid(val name: String) extends Creature {
-  override def goal(current: Coord, section: MapSection) =
+case class JunkSquid(name: String) extends Creature {
+  override def goal(current: Coord, section: MapSection): Coord =
     section.nearbyItems(current).find(_.thing.isInstanceOf[Robot]).map(_.coord).getOrElse(Coord(1,1))
 }
 
-case class Robodog(val name: String) extends Creature
+case class Robodog(name: String) extends Creature

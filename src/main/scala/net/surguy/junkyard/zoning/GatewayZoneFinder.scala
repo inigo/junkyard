@@ -1,24 +1,26 @@
 package net.surguy.junkyard.zoning
 
 import collection.mutable.{HashSet, ListBuffer}
-import net.surguy.junkyard.utils.WithLog
+import net.surguy.junkyard.utils.Logging
 import net.surguy.junkyard.Coord
 
 import scala.util.control.Breaks._
 import net.surguy.junkyard.mapping.MapSection
 
+import scala.collection.mutable
+
 /**
  * Uses the "Gateway decomposition algorithm" described in "Improved Heuristics for Optimal Pathfinding on Game Maps"
  * (Bjornsson and Halldorsson) to describe the map into zones.
  */
-class GatewayZoneFinder(size: Int) extends WithLog {
+class GatewayZoneFinder(size: Int) extends Logging {
 
   def addZones(initialMap: MapSection) = {
     val allPassableTilesInMap = for (x <- 0 until size;
                                      y <- 0 until size;
-                                     c = Coord(x,y);
+                                     c = Coord(x,y)
                                      if initialMap.terrainAt(c).getDifficulty < 500) yield c
-    val unzonedTiles = HashSet[Coord]()
+    val unzonedTiles = mutable.HashSet[Coord]()
     unzonedTiles ++= allPassableTilesInMap
 
     var currentMap = initialMap
@@ -35,10 +37,10 @@ class GatewayZoneFinder(size: Int) extends WithLog {
       val currentZone = new ListBuffer[List[Coord]]()
 
       def obstructed(x: Int, y: Int) = initialMap.terrainAt(Coord(x,y)).getDifficulty >= 500
-      def outsideArea(x: Int, y: Int) = (x < 0 || x > size || y < 0 || y > size)
+      def outsideArea(x: Int, y: Int) = x < 0 || x > size || y < 0 || y > size
       def furtherRightThanPreviousLine(x: Int, y: Int) = {
         if (currentZone.isEmpty) false // No previous line, so can't be further right than it
-        (x > currentZone.last.last.x)
+        x > currentZone.last.last.x
       }
       def unobstructedUnzonedSpaceAbove(x: Int, y: Int) = {
         val above = Coord(x, y-1)
@@ -128,9 +130,9 @@ class GatewayZoneFinder(size: Int) extends WithLog {
           log.debug("Moving down to line "+y)
         }
       }
-      unzonedTiles --= currentZone.flatten.toSeq
+      unzonedTiles --= currentZone.flatten
 
-      zoneBuilder = zoneBuilder.createZone(currentZone.flatten.toSeq)
+      zoneBuilder = zoneBuilder.createZone(currentZone.flatten)
       // Useful for debugging - shows the state just before the failed zone was added:      
 //      try {
 //        zoneBuilder = zoneBuilder.createZone(currentZone.flatten.toSeq)

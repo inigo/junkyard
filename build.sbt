@@ -1,20 +1,16 @@
-name := "Junkyard"
+name := """Junkyard"""
 
-version := "1.0"
+version := "1.0-SNAPSHOT"
 
-organization := "surguy.net"
-
-scalaVersion := "2.9.1"
-
+lazy val root = (project in file("."))
 
 parallelExecution in Test := false
 
-// logLevel := Level.Warn
+scalaVersion := "2.11.7"
 
-// only show stack traces up to the first sbt stack frame
-traceLevel := 0
+libraryDependencies ++= Seq(
+    "junit" % "junit" % "4.6" % "test"
+    , "org.specs2" %% "specs2-core" % "3.8.9" % "test"
+    , "ch.qos.logback" % "logback-classic" % "1.2.3"
+)
 
-// Use an external Maven POM
-externalPom()
-
-resolvers += "Local Maven Repository" at "file://"+Path.userHome+"/.m2/repository"

@@ -1,24 +1,17 @@
 package net.surguy.junkyard.mapping
 
 import net.surguy.junkyard.zoning._
-import net.surguy.junkyard.utils.WithLog
+import net.surguy.junkyard.utils.Logging
 import net.surguy.junkyard._
 
-/**
- * 
- *
- * @author Inigo Surguy
- * @created Mar 20, 2010 4:58:58 PM
- */
-
-class MapSection private[mapping](private val items: List[PlacedThing], private val terrain: Array[Array[Terrain]], val zones: Option[ZoneLookup] = None) extends WithLog {
+class MapSection private[mapping](private val items: List[PlacedThing], private val terrain: Array[Array[Terrain]], val zones: Option[ZoneLookup] = None) extends Logging {
 
   val defaultTerrain = Glass()
 
-  def allCreatures(): List[PlacedThing] = items.filter(i => i.thing.isInstanceOf[Creature] )
+  def allCreatures: List[PlacedThing] = items.filter(i => i.thing.isInstanceOf[Creature] )
   def allItems: List[PlacedThing] = items
 
-  private def withinBounds(coord: Coord) = coord.x >=0 && coord.x < terrain.size && coord.y >= 0 && coord.y < terrain.size
+  private def withinBounds(coord: Coord) = coord.x >=0 && coord.x < terrain.length && coord.y >= 0 && coord.y < terrain.length
 
   def terrainAt(coord: Coord): Terrain = if (withinBounds(coord)) terrain(coord.x)(coord.y) else defaultTerrain
 

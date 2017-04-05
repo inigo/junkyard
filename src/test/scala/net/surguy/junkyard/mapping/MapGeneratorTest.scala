@@ -1,25 +1,18 @@
 package net.surguy.junkyard.mapping
 
-import org.specs.SpecificationWithJUnit
 import net.surguy.junkyard.ui.ConsoleDisplay
+import org.specs2.mutable.Specification
 
-/**
- * 
- *
- * @author Inigo Surguy
- * @created Mar 21, 2010 10:46:20 PM
- */
-
-class MapGeneratorTest extends SpecificationWithJUnit {
+class MapGeneratorTest extends Specification {
 
   "generating a map" should {
      "create a small map" in {
        val display = new ConsoleDisplay(5)
-       display.display(new MapGenerator().createMap(5)) mustNot throwAnException
+       display.display(new MapGenerator().createMap(5)) must not(throwAn[Exception])
      }
      "create a larger map" in {
        val display = new ConsoleDisplay(25)
-       display.display(new MapGenerator().createMap(25)) mustNot throwAnException
+       display.display(new MapGenerator().createMap(25)) must not(throwAn[Exception])
      }
   }
 

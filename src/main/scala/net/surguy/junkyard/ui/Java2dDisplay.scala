@@ -5,13 +5,6 @@ import net.surguy.junkyard.Coord
 import java.awt.{Color, Font}
 import net.surguy.junkyard.mapping.MapSection
 
-/**
- * 
- *
- * @author Inigo Surguy
- * @created Mar 21, 2010 4:38:20 PM
- */
-
 class Java2dDisplay(val totalWidth: Int, val totalHeight: Int, val size: Int) extends Display {
   val xDimension: Int = totalWidth / size
   val yDimension: Int = totalHeight / size
@@ -44,7 +37,7 @@ class Java2dDisplay(val totalWidth: Int, val totalHeight: Int, val size: Int) ex
     val g = frame.getGraphics
     g.setFont(new Font("Sans-serif", Font.PLAIN, yDimension))
 
-    val toUpdate: Iterable[Coord] = changedAreas.getOrElse( for (x <- (0 until size); y <- (0 until size)) yield Coord(x,y) )
+    val toUpdate: Iterable[Coord] = changedAreas.getOrElse( for (x <- 0 until size; y <- 0 until size) yield Coord(x,y) )
     
     for (c <- toUpdate;
          if changedAreas.isEmpty || changedAreas.get.contains(c);

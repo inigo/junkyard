@@ -3,16 +3,15 @@ package net.surguy.junkyard.mapping
 import collection.mutable.ListBuffer
 import util.Random
 import net.surguy.junkyard._
-import utils.WithLog
+import utils.Logging
 import collection.TraversableLike
 
 /**
  * Randomly create a map.
  *
  * @author Inigo Surguy
- * @created Mar 21, 2010 10:02:16 PM
  */
-class MapGenerator(private val seed: Long = System.currentTimeMillis) extends WithLog {
+class MapGenerator(private val seed: Long = System.currentTimeMillis) extends Logging {
   private val rnd = new Random(seed)
   
   def createMap(size: Int, specifiedItems: List[PlacedThing] = List()): MapSection = {

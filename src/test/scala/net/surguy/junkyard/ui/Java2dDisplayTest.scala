@@ -1,27 +1,19 @@
 package net.surguy.junkyard.ui
 
-import org.specs.SpecificationWithJUnit
-import net.surguy.junkyard._
 import net.surguy.junkyard.mapping.MapGenerator
+import org.specs2.mutable.Specification
 
-/**
- * 
- *
- * @author Inigo Surguy
- * @created Mar 21, 2010 4:46:11 PM
- */
+class Java2dDisplayTest extends Specification {
 
-class Java2dDisplayTest extends SpecificationWithJUnit {
-
-  val map = new MapGenerator().createMap(5)
+  private val map = new MapGenerator().createMap(5)
+  private val d = new Java2dDisplay(600,600,10)
 
   "initializing" should {
      "show a frame" in {
-       val d = new Java2dDisplay(600,600,10)
-       d.display(map) mustNot throwAnException
-       d.dispose()
+       d.display(map) must not(throwAn[Exception])
      }
   }
 
+  step { d.dispose() }
 
 }

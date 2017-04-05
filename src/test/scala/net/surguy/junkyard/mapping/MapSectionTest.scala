@@ -1,15 +1,9 @@
 package net.surguy.junkyard.mapping
 
-import org.specs.SpecificationWithJUnit
+import org.specs2.mutable.Specification
 
-/**
- * 
- *
- * @author Inigo Surguy
- * @created Mar 20, 2010 5:23:37  PM
- */
 
-class MapSectionTest extends SpecificationWithJUnit {
+class MapSectionTest extends Specification {
 
 /*
   val items = Robot("glub").at(5,5) :: Heap().at(3,4) :: Heap().at(3,3) :: PowerSocket().at(1,1) :: List()

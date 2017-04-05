@@ -1,24 +1,16 @@
 package net.surguy.junkyard.goals
 
-import org.specs.SpecificationWithJUnit
 import net.surguy.junkyard.mapping._
-import net.surguy.junkyard.{JunkSquid, PlacedThing, Robot}
+import net.surguy.junkyard.{JunkSquid, Robot}
+import org.specs2.mutable.Specification
 
-/**
- * 
- *
- * @author Inigo Surguy
- * @created Apr 11, 2010 3:14:36 PM
- */
-
-class RulesTest extends SpecificationWithJUnit {
+class RulesTest extends Specification {
 
   class MyRobot extends Robot("myrobot") with Welder
-  val welder = new MyRobot().at(3,3)
+  private val welder = new MyRobot().at(3,3)
 
-  val items = List( welder, new JunkSquid("squiddy").at(3,4) )
-  val map = new MapGenerator().createMap(5, items)
-
+  private val items = List( welder, JunkSquid("squiddy").at(3,4) )
+  private val map = new MapGenerator().createMap(5, items)
 
   "identifying applicable rules" should {
     "inherit rules from all traits" in {

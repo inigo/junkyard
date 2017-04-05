@@ -1,7 +1,7 @@
 package net.surguy.junkyard.zoning
 
 import collection.mutable.{HashSet, Queue}
-import net.surguy.junkyard.utils.WithLog
+import net.surguy.junkyard.utils.Logging
 import net.surguy.junkyard.Coord
 import net.surguy.junkyard.mapping.MapSection
 
@@ -16,7 +16,7 @@ import net.surguy.junkyard.mapping.MapSection
  * @created Mar 26, 2010 9:52:25 PM
  */
 
-class ZoneFinder(val size: Int) extends WithLog {
+class ZoneFinder(val size: Int) extends Logging {
 
   /**
    * Rules for doing pathfinding while zoning - spread out in all directions, but stay on the map, and don't revisit any
