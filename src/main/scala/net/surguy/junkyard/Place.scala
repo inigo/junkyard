@@ -1,10 +1,10 @@
 package net.surguy.junkyard
 
-abstract class Place  extends Thing
+sealed abstract class Place  extends Thing
 case class PowerSocket() extends Place
 case class Terminal() extends Place
 
-abstract class Terrain extends Thing { self : { val difficulty : Int } =>
+sealed abstract class Terrain extends Thing { self : { val difficulty : Int } =>
   def getDifficulty: Int = self.difficulty
 }
 case class Glass(difficulty: Int = 1) extends Terrain

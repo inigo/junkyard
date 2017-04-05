@@ -28,6 +28,7 @@ class ConsoleDisplay(size: Int) extends Display {
     case r: Heap => Glyph("^",new Color(90,90,90))
     case r: Rubble => Glyph("~",new Color(90,90,90))
     case r: Wall => Glyph("x",new Color(90,90,90))
+    case r: WellShaft => Glyph("|",new Color(90,90,90))
   }
 
   private[ui] def toDisplayRobot(things: List[Thing]) : Option[Glyph] =
