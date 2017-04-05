@@ -4,3 +4,4 @@ project/target
 *.bak
 *.swp
 .idea
+.DS_Store
