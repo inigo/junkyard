@@ -1,15 +1,19 @@
 package net.surguy.junkyard.ui
 
+import java.awt.{Color, Font}
 import javax.swing.JFrame
 
 import net.surguy.junkyard.Coord
-import java.awt.{Color, Font}
-
 import net.surguy.junkyard.mapping.MapSection
 
-import scala.language.implicitConversions
+/**
+  * Display a [[net.surguy.junkyard.mapping.MapSection]] on a Java2D graphics display, updating the display with only
+  * the parts that have changed from the last MapSection (although this depends on the caller telling the display
+  * what has changed - the caller should already know this).
+  */
+class Java2dDisplay(totalWidth: Int, totalHeight: Int, size: Int) extends Display {
+  import DarkenColor._
 
-class Java2dDisplay(val totalWidth: Int, val totalHeight: Int, val size: Int) extends Display {
   val xDimension: Int = totalWidth / size
   val yDimension: Int = totalHeight / size
 
@@ -32,11 +36,6 @@ class Java2dDisplay(val totalWidth: Int, val totalHeight: Int, val size: Int) ex
   override def display(section: MapSection) { display(section, None) }
   override def display(section: MapSection, changedAreas: Set[Coord]) { display(section, Some(changedAreas)) }
 
-  implicit def DarkenColor(color: Color) = new {
-    def darken(i: Int): Int = if (i>=30) i - 30 else 0
-    def darken(): Color = new Color( darken(color.getRed), darken(color.getGreen), darken(color.getBlue) )
-  }
-
   private def display(section: MapSection, changedAreas: Option[Set[Coord]]) {
     val g = frame.getGraphics
     g.setFont(new Font("Sans-serif", Font.PLAIN, yDimension))
@@ -56,8 +55,8 @@ class Java2dDisplay(val totalWidth: Int, val totalHeight: Int, val size: Int) ex
         val zone = section.zones.get.zoneAt(c)
         var color = zone.map(_.getColor).getOrElse(new Color(255, 255, 255))
         if (zone.isDefined) {
-          if (zone.get.edgeCoords.contains(c)) color = color.darken()
-          if (zone.get.filteredEdgeCoords.contains(c)) color = color.darken()
+          if (zone.get.edgeCoords.contains(c)) color = darken(color)
+          if (zone.get.filteredEdgeCoords.contains(c)) color = darken(color)
         }
         g.setColor( color )
         g.fillRect(left, top - yDimension, cellWidth, cellHeight)
@@ -70,4 +69,9 @@ class Java2dDisplay(val totalWidth: Int, val totalHeight: Int, val size: Int) ex
 //    Thread.sleep(300)
   }
 
+}
+
+object DarkenColor {
+  def darken(i: Int): Int = if (i>=30) i - 30 else 0
+  def darken(color: Color): Color = new Color( darken(color.getRed), darken(color.getGreen), darken(color.getBlue) )
 }

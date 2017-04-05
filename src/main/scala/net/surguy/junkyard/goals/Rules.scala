@@ -6,13 +6,6 @@ import net.surguy.junkyard._
 import scala.language.implicitConversions
 import scala.reflect.Manifest
 
-/**
- *
- *
- * @author Inigo Surguy
- * @created Apr 9, 2010 3:08:36 PM
- */
-
 object RulesMatcher {
   def applicableRules(placedThing: PlacedThing, mapSection: MapSection): List[Rule] = {
     val state = new State(placedThing, mapSection)

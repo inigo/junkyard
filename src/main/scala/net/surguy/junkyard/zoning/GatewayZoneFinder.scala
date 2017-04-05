@@ -1,13 +1,12 @@
 package net.surguy.junkyard.zoning
 
-import collection.mutable.{HashSet, ListBuffer}
-import net.surguy.junkyard.utils.Logging
 import net.surguy.junkyard.Coord
-
-import scala.util.control.Breaks._
 import net.surguy.junkyard.mapping.MapSection
+import net.surguy.junkyard.utils.Logging
 
 import scala.collection.mutable
+import scala.collection.mutable.ListBuffer
+import scala.util.control.Breaks._
 
 /**
  * Uses the "Gateway decomposition algorithm" described in "Improved Heuristics for Optimal Pathfinding on Game Maps"
@@ -15,7 +14,7 @@ import scala.collection.mutable
  */
 class GatewayZoneFinder(size: Int) extends Logging {
 
-  def addZones(initialMap: MapSection) = {
+  def addZones(initialMap: MapSection): MapSection = {
     val allPassableTilesInMap = for (x <- 0 until size;
                                      y <- 0 until size;
                                      c = Coord(x,y)
@@ -44,7 +43,7 @@ class GatewayZoneFinder(size: Int) extends Logging {
       }
       def unobstructedUnzonedSpaceAbove(x: Int, y: Int) = {
         val above = Coord(x, y-1)
-        (!obstructed(above.x,above.y) && (unzonedTiles.contains(above) && !currentZone.flatten.contains(above)))
+        !obstructed(above.x, above.y) && (unzonedTiles.contains(above) && !currentZone.flatten.contains(above))
       }
 
       var isShrinkingLeft = false
@@ -146,8 +145,6 @@ class GatewayZoneFinder(size: Int) extends Logging {
   }
 
 
-  def topLeft(tiles: Seq[Coord]): Coord = tiles.min(new Ordering[Coord] {
-      def compare(a: Coord, b: Coord) = if (a.y.compare(b.y)!=0) a.y.compare(b.y) else a.x.compare(b.x)
-  })
+  def topLeft(tiles: Seq[Coord]): Coord = tiles.min((a: Coord, b: Coord) => if (a.y.compare(b.y) != 0) a.y.compare(b.y) else a.x.compare(b.x))
 
 }

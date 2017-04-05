@@ -7,9 +7,7 @@ import utils.Logging
 import collection.TraversableLike
 
 /**
- * Randomly create a map.
- *
- * @author Inigo Surguy
+ * Randomly create a map, containing terrain, places, items and creatures.
  */
 class MapGenerator(private val seed: Long = System.currentTimeMillis) extends Logging {
   private val rnd = new Random(seed)
@@ -18,22 +16,22 @@ class MapGenerator(private val seed: Long = System.currentTimeMillis) extends Lo
     val terrain: Array[Array[Terrain]] = Array.fill(size,size)(Glass())
 
     val items = new ListBuffer[Option[PlacedThing]]()
-    for (x <- (0 until size);
-         y <- (0 until size);
+    for (x <- 0 until size;
+         y <- 0 until size;
          c = Coord(x,y)) {
       terrain(x)(y) = randomTerrain()
       items += randomPlace().collect{ case t => new PlacedThing(t,c,List[Coord]()) }
       items += randomCreature().collect{ case t => new PlacedThing(t,c,List[Coord]()) }
     }
 
-    for (x <- (0 until size by size/3);
-         y <- (0 until size);
+    for (x <- 0 until size by size / 3;
+         y <- 0 until size;
          c = Coord(x,y)) {
       if (rnd.nextInt(5)<4) terrain(x)(y) = Wall()
     }
 
-    for (x <- (0 until size);
-         y <- (0 until size by size/3);
+    for (x <- 0 until size;
+         y <- 0 until size by size / 3;
          c = Coord(x,y)) {
       if (rnd.nextInt(5)<4) terrain(x)(y) = Wall()
     }
@@ -73,7 +71,8 @@ class MapGenerator(private val seed: Long = System.currentTimeMillis) extends Lo
 
   val nameCharacters = "abcaeiouaedefghilmnoprstuvw"
   private def randomName() : String = {
-    val name = for (i <- (1 to 4+rnd.nextInt(6))) yield nameCharacters(rnd.nextInt(nameCharacters.size))
+    val nameLength = 4+rnd.nextInt(6)
+    val name = for (i <- 1 to nameLength) yield nameCharacters(rnd.nextInt(nameCharacters.length))
     name.mkString("")
   }
 

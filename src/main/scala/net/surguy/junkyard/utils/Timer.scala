@@ -1,19 +1,17 @@
 package net.surguy.junkyard.utils
 
 import java.io.PrintStream
-import collection.mutable.HashMap
-import java.lang.String
+
 import org.slf4j.Logger
 
+import scala.collection.mutable
+
 /**
- * 
- *
- * @author Inigo Surguy
- * @created Mar 23, 2010 8:38:06 PM
- */
-class Timer(val ignoreFirst: Int = 0, val stages: Int = 1, val out: TimeReporter) {
+  * Time a function - particularly when called repeatedly - and log the total and average times taken.
+  */
+class Timer(ignoreFirst: Int = 0, stages: Int = 1, out: TimeReporter) {
   var count = 0
-  val totals = new HashMap[String, Long]() {
+  val totals = new mutable.HashMap[String, Long]() {
     override def default(key: String) = 0
   }
 

@@ -4,6 +4,9 @@ import net.surguy.junkyard._
 import java.awt.Color
 import mapping.MapSection
 
+/**
+  * Dump a map to console as text.
+  */
 class ConsoleDisplay(size: Int) extends Display {
 
   def display(section: MapSection): Unit = display(section, Set())
@@ -45,8 +48,5 @@ class ConsoleDisplay(size: Int) extends Display {
       case _ => None
     }
 
-
+  private[ui] case class Glyph(char: String, color: Color)
 }
-
-
-case class Glyph(char: String, color: Color)

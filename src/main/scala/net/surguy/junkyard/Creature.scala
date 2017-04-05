@@ -5,7 +5,7 @@ import mapping.MapSection
 import util.Random
 import utils.Logging
 
-abstract class Creature extends Thing with Logging {
+sealed abstract class Creature extends Thing with Logging {
   def goal(current: Coord, section: MapSection) : Coord = Coord(1,1)
 }
 case class Robot(name: String) extends Creature with PowerUser {

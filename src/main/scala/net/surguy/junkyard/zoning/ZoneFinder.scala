@@ -1,21 +1,18 @@
 package net.surguy.junkyard.zoning
 
-import collection.mutable.{HashSet, Queue}
 import net.surguy.junkyard.utils.Logging
 import net.surguy.junkyard.Coord
 import net.surguy.junkyard.mapping.MapSection
 
+import scala.collection.mutable
+
 /**
  * An alternative zoning algorithm to the GatewayZoneFinder.
- * <p>
- * Produces zones that are more ragged but more contiguous. Needs to be changed to:
- * - choose start points from the list of all unzoned squares (currently we miss zoning unreachable squares) - maybe not too serious
- * - merge very small zones with their neighbours
  *
- * @author Inigo Surguy
- * @created Mar 26, 2010 9:52:25 PM
+ * Produces zones that are more ragged but more contiguous. Needs to be changed to:
+ *  - choose start points from the list of all unzoned squares (currently we miss zoning unreachable squares) - maybe not too serious
+ *  - merge very small zones with their neighbours
  */
-
 class ZoneFinder(val size: Int) extends Logging {
 
   /**
@@ -30,13 +27,13 @@ class ZoneFinder(val size: Int) extends Logging {
       case _ if section.terrainAt(c).getDifficulty > 500 => true
       case _ => false
     }
-    override def isDone(closed: HashSet[Coord], open: Queue[Coord]) = closed.size > 10 && (open.size < (closed.size-5) / 3)
+    override def isDone(closed: mutable.HashSet[Coord], open: mutable.Queue[Coord]): Boolean = closed.size > 10 && (open.size < (closed.size-5) / 3)
   }
 
-  def addZones(initialMap: MapSection) = {
+  def addZones(initialMap: MapSection): MapSection = {
     val maxZoneSize = 500
 
-    val open = new Queue[Coord]
+    val open = new mutable.Queue[Coord]
     open += Coord(3,3) // arbitrary start point - needs to be passible
 
     var zoneBuilder = new ZoneBuilder()

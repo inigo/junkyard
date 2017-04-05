@@ -1,66 +1,30 @@
 package net.surguy.junkyard.pathfinder
 
-import collection.mutable.{HashSet, ListBuffer, PriorityQueue, Queue}
-import net.surguy.junkyard.utils.Logging
 import net.surguy.junkyard._
-import mapping.MapSection
+import net.surguy.junkyard.pathfinder.AstarPathFinder.Cost
+import net.surguy.junkyard.utils.Logging
 
 import scala.collection.mutable
 
 /**
- * Implement the A* algorithm for path finding.
- * <p>
- * From O'Reilly's AI for Game Developers:
- *
- * <pre>
- *  current node=node from open list with the lowest cost
- *  if current node = goal node then
- *    path complete
- *  else
- *    move current node to the closed list
- *    examine each node adjacent to the current node
- *    for each adjacent node
- *      if it isn't on the open list
- *        and isn't on the closed list
- *          and it isn't an obstacle then
- *            move it to open list and calculate score, based on cost + heuristic
- * </pre>
- */
-
-abstract class PathRules {
-  import AstarPathFinder._
-  
-  def getAdjacent(c: Coord) : List[Coord]
-  def isImpassible(c: Coord): Boolean
-  def getCost(c: Coord): AstarPathFinder.Cost
-  def getScore(n: Node, destination: Coord): Int
-}
-
-class JunkyardPathRules(val section: MapSection, val creature: Creature) extends PathRules {
-  import AstarPathFinder._
-
-  override def getAdjacent(c: Coord) : List[Coord] = List(Coord(c.x+1, c.y), Coord(c.x-1, c.y), Coord(c.x, c.y+1), Coord(c.x, c.y-1))
-  override def isImpassible(c: Coord): Boolean = section.terrainAt(c).getDifficulty > 500
-  override def getCost(c: Coord): Cost = section.terrainAt(c).getDifficulty
-  override def getScore(n: Node, destination: Coord): Int = {
-    def heuristic(a: Coord, b: Coord): Cost = Math.abs(a.x - b.x) + Math.abs(a.y - b.y)
-    n.totalCost + 3 * heuristic(n.coord, destination)
-  }
-}
-
-object AstarPathFinder {
-  type Cost = Int
-
-  case class Node(coord: Coord, inherentCost: Cost, parent: Option[Node]) {
-    val path: List[Node] = toPath().reverse
-    val totalCost: Cost = path.foldLeft(0)(_+_.inherentCost)
-    private def toPath(): List[Node] = parent match {
-      case None => List(this)
-      case Some(n) => this :: n.toPath
-    }
-  }
-}
-
+  * Implement the A* algorithm for path finding.
+  *
+  * From O'Reilly's AI for Game Developers:
+  *
+  * <pre>
+  *  current node=node from open list with the lowest cost
+  *  if current node = goal node then
+  *    path complete
+  *  else
+  *    move current node to the closed list
+  *    examine each node adjacent to the current node
+  *    for each adjacent node
+  *      if it isn't on the open list
+  *        and isn't on the closed list
+  *          and it isn't an obstacle then
+  *            move it to open list and calculate score, based on cost + heuristic
+  * </pre>
+  */
 class AstarPathFinder(rules: PathRules, maxSearchedNodes: Int = 900) extends PathFinder with Logging {
   import AstarPathFinder._
 
@@ -69,16 +33,14 @@ class AstarPathFinder(rules: PathRules, maxSearchedNodes: Int = 900) extends Pat
     if (rules.isImpassible(destination)) return List[Coord]()
 
     val considered = new mutable.HashSet[Coord]()
-    val open = new mutable.PriorityQueue[Node]()(new Ordering[Node] {
-      def compare(a: Node, b: Node): Cost = - rules.getScore(a, destination).compare(rules.getScore(b, destination))
-    })
+    val open = new mutable.PriorityQueue[PathNode]()((a: PathNode, b: PathNode) => -rules.getScore(a, destination).compare(rules.getScore(b, destination)))
 
-    open += Node(start, 0, None)
+    open += PathNode(start, 0, None)
     considered += start
-    var lastNodeInPath: Option[Node] = None
+    var lastNodeInPath: Option[PathNode] = None
 
     while (open.nonEmpty && lastNodeInPath.isEmpty && considered.size<maxSearchedNodes) {
-      val current : Node = open.dequeue
+      val current : PathNode = open.dequeue
       if (current.coord == destination) {
         lastNodeInPath = Some(current)
       } else {
@@ -86,7 +48,7 @@ class AstarPathFinder(rules: PathRules, maxSearchedNodes: Int = 900) extends Pat
         val adjacentCoords = rules.getAdjacent(current.coord)
         adjacentCoords.filterNot( rules.isImpassible )
                       .filterNot( considered.contains )
-                      .foreach( n => { open+=Node(n, rules.getCost(n), Some(current)); considered+=n } )
+                      .foreach( n => { open+=PathNode(n, rules.getCost(n), Some(current)); considered+=n } )
       }
     }
 
@@ -97,4 +59,17 @@ class AstarPathFinder(rules: PathRules, maxSearchedNodes: Int = 900) extends Pat
     lastNodeInPath.map( _.path.map(_.coord).tail ).getOrElse(List[Coord]())
   }
 
+}
+
+object AstarPathFinder {
+  type Cost = Int
+}
+
+case class PathNode(coord: Coord, inherentCost: Cost, parent: Option[PathNode]) {
+  val path: List[PathNode] = toPath().reverse
+  val totalCost: Cost = path.foldLeft(0)(_+_.inherentCost)
+  private def toPath(): List[PathNode] = parent match {
+    case None => List(this)
+    case Some(n) => this :: n.toPath
+  }
 }

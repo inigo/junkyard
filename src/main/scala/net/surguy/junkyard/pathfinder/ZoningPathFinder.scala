@@ -5,10 +5,10 @@ import net.surguy.junkyard.Coord
 import net.surguy.junkyard.zoning.ZoneLookup
 
 /**
- * Navigate across a {{{MapSection map}}} by going between the central points of each
- * {{{ ZoneLookup zone}}}, reverting to low level path rules for navigating within a zone.
+ * Navigate across a [[net.surguy.junkyard.mapping.MapSection map]] by going between the central points of each
+ * [[net.surguy.junkyard.zoning.ZoneLookup zone]], reverting to low level path rules for navigating within a zone.
  *
- * This pathfinder should be slightly more efficient than the {{{ EdgesPathFinder edges pathfinder}}}
+ * This pathfinder should be slightly more efficient than the [[EdgesPathFinder edges pathfinder]]
  * because each zone is a single node, whereas the edges pathfinder has multiple nodes per zone.
  *
  * It currently fails in some cases (units get into a perpetual loop) because the low level pathfinder
@@ -22,7 +22,7 @@ class ZoningPathFinder(zones: ZoneLookup, lowLevelPathRules: PathRules, maxSearc
 
   private class ZoneRules extends PathRules {
     import AstarPathFinder._
-    override def getScore(n: Node, destination: Coord): Int = {
+    override def getScore(n: PathNode, destination: Coord): Int = {
       def heuristic(a: Coord, b: Coord): Cost = Math.abs(a.x - b.x) + Math.abs(a.y - b.y)
       n.totalCost + 3 * heuristic(n.coord, destination)
     }

@@ -10,5 +10,5 @@ private[pathfinder] class PathRulesWrapper(zones: ZoneLookup, pathRules: PathRul
     zones.zoneAt(c).map( z => pathRules.getAdjacent(c).filter( z.contains )).getOrElse( pathRules.getAdjacent(c) )
   override def isImpassible(c: Coord): Boolean = pathRules.isImpassible(c)
   override def getCost(c: Coord): Cost = pathRules.getCost(c)
-  override def getScore(n: Node, destination: Coord): Cost = pathRules.getScore(n, destination)
+  override def getScore(n: PathNode, destination: Coord): Cost = pathRules.getScore(n, destination)
 }

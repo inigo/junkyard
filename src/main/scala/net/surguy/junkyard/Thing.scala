@@ -18,9 +18,4 @@ case class Coord(x: Int, y: Int)
 
 case class ZonedTile(id: ZoneId) extends Thing
 
-sealed abstract class Item
 
-case class Oil() extends Item
-case class CrudeOil() extends Item
-case class Metal() extends Item
-case class Drum() extends Item

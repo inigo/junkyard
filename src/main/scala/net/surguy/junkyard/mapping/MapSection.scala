@@ -4,6 +4,10 @@ import net.surguy.junkyard.zoning._
 import net.surguy.junkyard.utils.Logging
 import net.surguy.junkyard._
 
+/**
+  * An immutable snapshot of a map, and the people and things on it, which can be turned into a new different snapshot via
+  * the [[MapSection#resolve]] method.
+  */
 class MapSection private[mapping](private val items: List[PlacedThing], private val terrain: Array[Array[Terrain]], val zones: Option[ZoneLookup] = None) extends Logging {
 
   val defaultTerrain = Glass()

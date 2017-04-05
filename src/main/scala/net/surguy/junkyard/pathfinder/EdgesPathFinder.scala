@@ -5,10 +5,9 @@ import net.surguy.junkyard._
 import net.surguy.junkyard.utils.Logging
 
 /**
- * Navigate between across a {{{MapSection map}}} by going between the edge nodes of each
- * {{{ZoneLookup zone}}}, reverting to low level path rules for navigating within a zone.
+ * Navigate between across a [[net.surguy.junkyard.mapping.MapSection map]] by going between the edge nodes of each
+ * [[net.surguy.junkyard.zoning.ZoneLookup zone]], reverting to low level path rules for navigating within a zone.
  */
-
 class EdgesPathFinder(zones: ZoneLookup, lowLevelPathRules: PathRules, maxSearchedNodes: Int = 50) extends PathFinder with Logging {
   val zoneLevelPathFinder = new AstarPathFinder(new EdgesRules())
   val lowLevelPathFinder = new AstarPathFinder(lowLevelPathRules)
@@ -16,7 +15,7 @@ class EdgesPathFinder(zones: ZoneLookup, lowLevelPathRules: PathRules, maxSearch
 
   private class EdgesRules extends PathRules {
     import AstarPathFinder._
-    override def getScore(n: Node, destination: Coord): Int = lowLevelPathRules.getScore(n, destination)
+    override def getScore(n: PathNode, destination: Coord): Int = lowLevelPathRules.getScore(n, destination)
     override def getCost(c: Coord): Cost = lowLevelPathRules.getCost(c)
     override def isImpassible(c: Coord): Boolean = lowLevelPathRules.isImpassible(c)
     override def getAdjacent(coord: Coord) : List[Coord] = {
